@@ -1,0 +1,32 @@
+[alias]
+
+	s = status -sb
+	l = log --oneline --decorate
+	g = log --oneline --decorate --graph
+	b = branch
+	initcd = "!initcd() { git init $1; cd $1;}; initcd"
+
+	days = "!days() { git log --pretty=format:%cd --date=short | uniq;}; days"
+	stat = "!stat() {echo -n Number of revisions:;git log --oneline | wc -l;echo -n Number of developers:; git shortlog -s | wc -l; echo -n Number of days:; git days | wc -l; echo -n The working directory:; du -h -s --exclude=.git; echo -n The git directory:; du -h -s .git; echo -n Number of files in the working dir:; git ls-files | wc -l;}; stat"
+
+	snapshot = "!snapshot() { COMMENT=wip; if [ \"$*\" ]; then  COMMENT=\"$*\"; fi; git add -A; git commit -m \"$COMMENT\"; }; snapshot"
+	backup = "!backup() { git snapshot \"$*\"; git push; }; backup"
+	create-file = "!createFile() { for name in \"$@\"; do echo $name>$name.txt; done; }; createFile"
+	simple-commit = "!simpleCommit() { for name in \"$@\"; do git create-file \"$name\"; git snapshot $name; done; }; simpleCommit"
+	simple-loop = "!simpleLoop() { NAME=$1; i=1; while [ $i -le $2 ]; do git simple-commit $NAME$i; i=$[$i+1]; done; }; simpleLoop"
+	multi-commit = "!multiCommit() { for name in \"$@\"; do git create-file ; done; git snapshot \"$*\"; }; multiCommit"
+	empty-commit = "!emptyCommit() { git commit --allow-empty -m \"Empty commit\"; }; emptyCommit"
+	empty-init = "!emptyInit() { git init ; git commit --allow-empty -m \"Initial empty commit\"; }; emptyInit"
+
+
+	list-remote-branches = "!listRemoteBranches() { git branch -r | sed \"/->/d; s/ origin\\///g\"; }; listRemoteBranches"
+	checkout-remote-branches = "!checkoutRemoteBranches() { for name in `git list-remote-branches`; do git checkout $name; done; }; checkoutRemoteBranches"
+	clone-with-branches = "!cloneWithBranches() { git clone $1 $2; cd $2; git checkout-remote-branches; git remote rm origin; }; cloneWithBranches"
+	lgda = log --oneline --graph --decorate --all
+
+[user]
+	name = benevo.woo
+	email = benevo.woo@gmail.com
+
+[core]
+	autocrlf = false
